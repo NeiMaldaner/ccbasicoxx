@@ -3,356 +3,375 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Claude Code Básico — Curso Gratuito</title>
-<meta name="description" content="Curso gratuito de Claude Code: aprenda do zero a programar com o agente de IA da Anthropic direto no terminal. 6 módulos, 100% grátis." />
+<title>Claude Code Básico — Curso Gratuito | Programe com IA do zero</title>
+<meta name="description" content="Curso gratuito de Claude Code: aprenda a programar com o agente de IA da Anthropic em poucas horas, mesmo começando do zero. Vagas abertas, 100% grátis." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --bg: #0a0e27;
-    --bg-2: #0d1230;
-    --card: #121738;
-    --card-2: #161c44;
-    --line: #232a55;
-    --text: #eef1ff;
-    --muted: #9aa3cc;
-    --accent: #ff7a18;
-    --accent-2: #ffb347;
-    --glow: rgba(255, 122, 24, 0.45);
+    --bg: #fbfaff;
+    --surface: #ffffff;
+    --ink: #14122b;
+    --muted: #6b6884;
+    --line: #ece9f7;
+    --brand: #ff5d2e;
+    --brand-2: #ff8a3d;
+    --pink: #ff4d8d;
+    --purple: #7c5cff;
+    --mint: #16c79a;
+    --soft: 0 12px 40px rgba(124,92,255,0.10);
+    --soft-2: 0 8px 28px rgba(20,18,43,0.08);
     --mono: 'JetBrains Mono', ui-monospace, monospace;
   }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
   body {
-    font-family: 'Inter', system-ui, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.6;
-    overflow-x: hidden;
+    font-family:'Plus Jakarta Sans', system-ui, sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.6; overflow-x:hidden;
     background-image:
-      radial-gradient(900px 500px at 80% -10%, rgba(255,122,24,0.10), transparent 60%),
-      radial-gradient(700px 500px at 0% 10%, rgba(70,90,255,0.10), transparent 60%);
+      radial-gradient(700px 400px at 90% -5%, rgba(255,93,46,0.10), transparent 60%),
+      radial-gradient(700px 500px at -5% 8%, rgba(124,92,255,0.10), transparent 60%);
+  }
+  .wrap { max-width:1140px; margin:0 auto; padding:0 24px; }
+  .grad-text {
+    background:linear-gradient(110deg, var(--brand), var(--pink) 55%, var(--purple));
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
   }
 
-  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  /* buttons */
+  .btn { display:inline-flex; align-items:center; gap:9px; font-weight:700; font-size:15px; text-decoration:none; padding:13px 24px; border-radius:14px; cursor:pointer; border:none; transition:transform .15s ease, box-shadow .25s ease, background .2s ease; white-space:nowrap; }
+  .btn-primary { background:linear-gradient(120deg, var(--brand), var(--brand-2)); color:#fff; box-shadow:0 10px 26px rgba(255,93,46,0.35); }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 16px 36px rgba(255,93,46,0.45); }
+  .btn-ghost { background:var(--surface); color:var(--ink); border:1.5px solid var(--line); box-shadow:var(--soft-2); }
+  .btn-ghost:hover { border-color:var(--brand); color:var(--brand); transform:translateY(-2px); }
+  .btn-lg { padding:16px 30px; font-size:16.5px; border-radius:16px; }
 
   /* NAV */
-  nav {
-    position: sticky; top: 0; z-index: 50;
-    backdrop-filter: blur(12px);
-    background: rgba(10,14,39,0.72);
-    border-bottom: 1px solid var(--line);
-  }
-  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
-  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: -0.02em; }
-  .brand .dot { color: var(--accent); }
-  .brand .mark {
-    width: 30px; height: 30px; border-radius: 8px;
-    display: grid; place-items: center; font-family: var(--mono); font-weight: 700;
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
-    color: #2a1500; box-shadow: 0 0 24px var(--glow);
-  }
-  .nav-links { display: flex; align-items: center; gap: 28px; }
-  .nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 500; transition: color .2s; }
-  .nav-links a:hover { color: var(--text); }
-  .btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-weight: 600; font-size: 14px; text-decoration: none;
-    padding: 11px 20px; border-radius: 10px; cursor: pointer; border: none;
-    transition: transform .15s ease, box-shadow .2s ease, background .2s ease;
-  }
-  .btn-primary {
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
-    color: #2a1500; box-shadow: 0 6px 24px var(--glow);
-  }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 34px var(--glow); }
-  .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--line); }
-  .btn-ghost:hover { border-color: var(--accent); color: var(--accent-2); }
-  @media (max-width: 720px) { .nav-links a:not(.btn) { display: none; } }
+  nav { position:sticky; top:0; z-index:50; backdrop-filter:blur(12px); background:rgba(251,250,255,0.8); border-bottom:1px solid var(--line); }
+  .nav-inner { display:flex; align-items:center; justify-content:space-between; height:68px; }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:-0.02em; font-size:18px; }
+  .brand .mark { width:34px; height:34px; border-radius:10px; display:grid; place-items:center; font-family:var(--mono); font-weight:700; background:linear-gradient(135deg, var(--brand), var(--pink)); color:#fff; box-shadow:0 6px 18px rgba(255,77,141,0.4); }
+  .nav-links { display:flex; align-items:center; gap:26px; }
+  .nav-links a:not(.btn) { color:var(--muted); text-decoration:none; font-size:14.5px; font-weight:600; transition:color .2s; }
+  .nav-links a:not(.btn):hover { color:var(--ink); }
+  @media (max-width:780px){ .nav-links a:not(.btn){ display:none; } }
 
   /* HERO */
-  header { padding: 96px 0 72px; text-align: center; position: relative; }
-  .pill {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-family: var(--mono); font-size: 12.5px; color: var(--accent-2);
-    border: 1px solid var(--line); background: var(--bg-2);
-    padding: 7px 14px; border-radius: 999px; margin-bottom: 28px;
-  }
-  .pill .live { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 0 var(--glow); animation: pulse 2s infinite; }
-  @keyframes pulse { 0%{box-shadow:0 0 0 0 var(--glow);} 70%{box-shadow:0 0 0 10px transparent;} 100%{box-shadow:0 0 0 0 transparent;} }
+  header { padding:74px 0 40px; text-align:center; }
+  .badge { display:inline-flex; align-items:center; gap:9px; background:var(--surface); border:1.5px solid var(--line); box-shadow:var(--soft-2); border-radius:999px; padding:8px 16px; font-size:13.5px; font-weight:700; color:var(--purple); margin-bottom:26px; }
+  .badge .dot { width:9px; height:9px; border-radius:50%; background:var(--mint); box-shadow:0 0 0 0 rgba(22,199,154,0.6); animation:pulse 2s infinite; }
+  @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(22,199,154,0.5);} 70%{box-shadow:0 0 0 9px transparent;} 100%{box-shadow:0 0 0 0 transparent;} }
+  h1 { font-size:clamp(38px, 6.6vw, 70px); line-height:1.06; letter-spacing:-0.035em; font-weight:800; margin-bottom:22px; }
+  .lead { font-size:clamp(17px, 2.3vw, 21px); color:var(--muted); max-width:640px; margin:0 auto 32px; }
+  .hero-cta { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+  .trust { margin-top:26px; display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap; color:var(--muted); font-size:14px; font-weight:600; }
+  .stars { color:#ffb800; letter-spacing:2px; font-size:16px; }
+  .avatars { display:flex; }
+  .avatars span { width:34px; height:34px; border-radius:50%; border:2.5px solid var(--bg); margin-left:-10px; display:grid; place-items:center; font-size:14px; font-weight:800; color:#fff; }
+  .avatars span:first-child{ margin-left:0; }
 
-  h1 {
-    font-size: clamp(40px, 7vw, 76px); line-height: 1.04; letter-spacing: -0.035em;
-    font-weight: 900; margin-bottom: 22px;
-  }
-  h1 .grad {
-    background: linear-gradient(120deg, var(--accent), var(--accent-2) 60%, #fff);
-    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
-  }
-  .lead { font-size: clamp(17px, 2.4vw, 21px); color: var(--muted); max-width: 640px; margin: 0 auto 36px; }
-  .hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-  .btn-lg { padding: 15px 28px; font-size: 16px; border-radius: 12px; }
+  /* terminal */
+  .terminal { max-width:680px; margin:48px auto 0; text-align:left; background:#1a1730; border-radius:18px; box-shadow:0 30px 70px rgba(20,18,43,0.28); overflow:hidden; border:1px solid #2a2748; }
+  .term-bar { display:flex; align-items:center; gap:8px; padding:13px 16px; background:#221e3d; border-bottom:1px solid #2a2748; }
+  .term-bar i { width:12px; height:12px; border-radius:50%; }
+  .term-bar .r{background:#ff5f57;} .term-bar .y{background:#febc2e;} .term-bar .g{background:#28c840;}
+  .term-bar span { margin-left:8px; font-family:var(--mono); font-size:12px; color:#9b97c4; }
+  .term-body { padding:22px; font-family:var(--mono); font-size:13.5px; line-height:1.95; color:#e7e5ff; }
+  .term-body .p{ color:#ff8a3d; } .term-body .c{ color:#8a86b8; } .term-body .ok{ color:#16c79a; }
+  .cursor { display:inline-block; width:8px; height:15px; background:#ff8a3d; vertical-align:middle; animation:blink 1.1s steps(1) infinite; }
+  @keyframes blink { 50%{opacity:0;} }
 
-  /* terminal mock */
-  .terminal {
-    max-width: 720px; margin: 56px auto 0; text-align: left;
-    background: #070a1c; border: 1px solid var(--line); border-radius: 14px;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.5); overflow: hidden;
-  }
-  .term-bar { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--bg-2); }
-  .term-bar i { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
-  .term-bar .r { background: #ff5f57; } .term-bar .y { background: #febc2e; } .term-bar .g { background: #28c840; }
-  .term-bar span { margin-left: 8px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
-  .term-body { padding: 22px; font-family: var(--mono); font-size: 14px; line-height: 1.9; }
-  .term-body .c-prompt { color: var(--accent); }
-  .term-body .c-cmd { color: var(--text); }
-  .term-body .c-com { color: var(--muted); }
-  .term-body .c-ok { color: #28c840; }
-  .cursor { display: inline-block; width: 9px; height: 16px; background: var(--accent); vertical-align: middle; animation: blink 1.1s steps(1) infinite; }
-  @keyframes blink { 50% { opacity: 0; } }
+  /* logos strip */
+  .strip { padding:34px 0; }
+  .strip p { text-align:center; color:var(--muted); font-size:13px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:18px; }
+  .strip .row { display:flex; justify-content:center; gap:40px; flex-wrap:wrap; opacity:0.75; font-weight:800; color:var(--muted); font-size:18px; }
 
-  /* STATS */
-  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin: 8px 0 0; }
-  .stat { text-align: center; padding: 26px 16px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; }
-  .stat b { display: block; font-size: clamp(28px, 4vw, 40px); font-weight: 900; letter-spacing: -0.03em; }
-  .stat b .grad { background: linear-gradient(120deg,var(--accent),var(--accent-2)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
-  .stat span { font-size: 13px; color: var(--muted); }
-  @media (max-width: 720px) { .stats { grid-template-columns: repeat(2,1fr); } }
+  /* generic section */
+  section { padding:72px 0; }
+  .head { text-align:center; max-width:640px; margin:0 auto 48px; }
+  .eyebrow { display:inline-block; font-size:13px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--brand); margin-bottom:12px; }
+  .h2 { font-size:clamp(28px, 4.4vw, 44px); font-weight:800; letter-spacing:-0.03em; margin-bottom:14px; }
+  .head p { color:var(--muted); font-size:17.5px; }
 
-  /* SECTIONS */
-  section { padding: 84px 0; }
-  .eyebrow { font-family: var(--mono); font-size: 13px; color: var(--accent-2); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 14px; }
-  .h2 { font-size: clamp(28px, 4.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 16px; }
-  .sub { color: var(--muted); max-width: 560px; font-size: 17px; }
-  .section-head { margin-bottom: 48px; }
-  .section-head.center { text-align: center; }
-  .section-head.center .sub { margin: 0 auto; }
+  /* pain -> gain */
+  .twocol { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+  @media (max-width:760px){ .twocol{ grid-template-columns:1fr; } }
+  .panel { border-radius:20px; padding:30px; border:1.5px solid var(--line); }
+  .panel.bad { background:#fff5f3; border-color:#ffd9cf; }
+  .panel.good { background:#f1fbf7; border-color:#c7f0e2; }
+  .panel h3 { font-size:18px; margin-bottom:16px; display:flex; align-items:center; gap:9px; }
+  .panel ul { list-style:none; display:flex; flex-direction:column; gap:12px; }
+  .panel li { display:flex; gap:11px; font-size:15.5px; color:var(--ink); }
+  .panel li .i { flex:none; }
+  .panel.bad li .i{ color:#ff5d2e; } .panel.good li .i{ color:var(--mint); }
 
-  /* MODULES grid */
-  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-  @media (max-width: 900px) { .grid { grid-template-columns: repeat(2,1fr); } }
-  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
-  .module {
-    background: var(--card); border: 1px solid var(--line); border-radius: 16px;
-    padding: 28px; position: relative; overflow: hidden;
-    transition: transform .2s ease, border-color .2s ease, background .2s ease;
-  }
-  .module:hover { transform: translateY(-4px); border-color: var(--accent); background: var(--card-2); }
-  .module .num { font-family: var(--mono); font-size: 13px; color: var(--accent); border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; display: inline-block; margin-bottom: 18px; }
-  .module h3 { font-size: 19px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.01em; }
-  .module p { color: var(--muted); font-size: 14.5px; }
-  .module .tags { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 6px; }
-  .module .tags span { font-size: 11.5px; font-family: var(--mono); color: var(--muted); background: var(--bg-2); border: 1px solid var(--line); border-radius: 6px; padding: 3px 8px; }
+  /* stats */
+  .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:18px; }
+  @media (max-width:720px){ .stats{ grid-template-columns:repeat(2,1fr); } }
+  .stat { background:var(--surface); border:1.5px solid var(--line); border-radius:18px; padding:26px 18px; text-align:center; box-shadow:var(--soft-2); }
+  .stat b { display:block; font-size:clamp(28px,4vw,40px); font-weight:800; letter-spacing:-0.03em; }
+  .stat span { color:var(--muted); font-size:13.5px; font-weight:600; }
 
-  /* FEATURES */
-  .features { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; }
-  @media (max-width: 720px) { .features { grid-template-columns: 1fr; } }
-  .feature { display: flex; gap: 16px; padding: 24px; border: 1px solid var(--line); border-radius: 14px; background: linear-gradient(180deg, var(--card), transparent); }
-  .feature .ico { flex: none; width: 44px; height: 44px; border-radius: 11px; display: grid; place-items: center; font-size: 20px; background: rgba(255,122,24,0.12); border: 1px solid var(--line); }
-  .feature h4 { font-size: 16.5px; margin-bottom: 6px; }
-  .feature p { color: var(--muted); font-size: 14.5px; }
+  /* modules */
+  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+  @media (max-width:900px){ .grid{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:600px){ .grid{ grid-template-columns:1fr; } }
+  .card { background:var(--surface); border:1.5px solid var(--line); border-radius:20px; padding:28px; box-shadow:var(--soft-2); transition:transform .2s ease, box-shadow .2s ease; }
+  .card:hover { transform:translateY(-5px); box-shadow:var(--soft); }
+  .card .ico { width:52px; height:52px; border-radius:14px; display:grid; place-items:center; font-size:24px; margin-bottom:16px; }
+  .card h3 { font-size:18.5px; margin-bottom:8px; letter-spacing:-0.01em; }
+  .card p { color:var(--muted); font-size:14.5px; }
+  .card .num { font-family:var(--mono); font-size:12px; font-weight:700; color:var(--muted); margin-bottom:6px; }
 
-  /* STEPS */
-  .steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; counter-reset: s; }
-  @media (max-width: 760px){ .steps { grid-template-columns: 1fr; } }
-  .step { padding: 26px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); position: relative; }
-  .step::before { counter-increment: s; content: "0" counter(s); font-family: var(--mono); font-size: 44px; font-weight: 700; color: var(--line); position: absolute; top: 14px; right: 18px; }
-  .step h4 { font-size: 17px; margin-bottom: 8px; }
-  .step p { color: var(--muted); font-size: 14.5px; }
+  /* testimonials */
+  .quotes { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+  @media (max-width:900px){ .quotes{ grid-template-columns:1fr; } }
+  .quote { background:var(--surface); border:1.5px solid var(--line); border-radius:20px; padding:26px; box-shadow:var(--soft-2); }
+  .quote .stars { font-size:14px; margin-bottom:12px; }
+  .quote p { font-size:15px; margin-bottom:18px; }
+  .quote .who { display:flex; align-items:center; gap:12px; }
+  .quote .who .av { width:42px; height:42px; border-radius:50%; display:grid; place-items:center; color:#fff; font-weight:800; }
+  .quote .who b { display:block; font-size:14.5px; } .quote .who small { color:var(--muted); }
 
-  /* CTA */
-  .cta-box {
-    text-align: center; border: 1px solid var(--line); border-radius: 24px; padding: 64px 28px;
-    background:
-      radial-gradient(600px 240px at 50% 0%, rgba(255,122,24,0.16), transparent 70%),
-      var(--bg-2);
-  }
-  .cta-box h2 { font-size: clamp(30px, 5vw, 50px); font-weight: 900; letter-spacing: -0.03em; margin-bottom: 16px; }
-  .cta-box p { color: var(--muted); font-size: 18px; max-width: 520px; margin: 0 auto 32px; }
-  .cta-note { margin-top: 18px; font-family: var(--mono); font-size: 12.5px; color: var(--muted); }
+  /* steps */
+  .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+  @media (max-width:760px){ .steps{ grid-template-columns:1fr; } }
+  .step { text-align:center; padding:14px; }
+  .step .n { width:56px; height:56px; margin:0 auto 16px; border-radius:50%; display:grid; place-items:center; font-weight:800; font-size:22px; color:#fff; background:linear-gradient(135deg,var(--brand),var(--pink)); box-shadow:0 10px 24px rgba(255,77,141,0.35); }
+  .step h4 { font-size:18px; margin-bottom:8px; } .step p { color:var(--muted); font-size:15px; }
 
-  /* FOOTER */
-  footer { border-top: 1px solid var(--line); padding: 48px 0; color: var(--muted); }
-  .foot { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 18px; }
-  .foot a { color: var(--muted); text-decoration: none; font-size: 14px; }
-  .foot a:hover { color: var(--accent-2); }
-  .foot-links { display: flex; gap: 22px; flex-wrap: wrap; }
+  /* faq */
+  .faq { max-width:760px; margin:0 auto; display:flex; flex-direction:column; gap:14px; }
+  details { background:var(--surface); border:1.5px solid var(--line); border-radius:16px; padding:6px 22px; box-shadow:var(--soft-2); }
+  summary { list-style:none; cursor:pointer; font-weight:700; font-size:16px; padding:16px 0; display:flex; justify-content:space-between; align-items:center; }
+  summary::-webkit-details-marker { display:none; }
+  summary::after { content:"+"; font-size:24px; color:var(--brand); font-weight:400; }
+  details[open] summary::after { content:"–"; }
+  details p { color:var(--muted); padding:0 0 18px; font-size:15px; }
 
-  /* reveal animation */
-  .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
-  .reveal.in { opacity: 1; transform: none; }
+  /* final CTA */
+  .final { border-radius:28px; padding:64px 28px; text-align:center; color:#fff; background:linear-gradient(125deg, var(--brand), var(--pink) 55%, var(--purple)); box-shadow:0 30px 70px rgba(124,92,255,0.35); }
+  .final h2 { font-size:clamp(30px,5vw,50px); font-weight:800; letter-spacing:-0.03em; margin-bottom:14px; }
+  .final p { font-size:18.5px; opacity:0.95; max-width:540px; margin:0 auto 30px; }
+  .final .btn-primary { background:#fff; color:var(--brand); box-shadow:0 14px 30px rgba(0,0,0,0.18); }
+  .final .btn-primary:hover { background:#fff; }
+  .final .note { margin-top:18px; font-size:14px; opacity:0.9; }
+
+  /* footer */
+  footer { padding:48px 0; border-top:1px solid var(--line); color:var(--muted); }
+  .foot { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+  .foot a { color:var(--muted); text-decoration:none; font-size:14px; font-weight:600; }
+  .foot a:hover { color:var(--brand); }
+  .foot-links { display:flex; gap:22px; flex-wrap:wrap; }
+
+  .reveal { opacity:0; transform:translateY(22px); transition:opacity .7s ease, transform .7s ease; }
+  .reveal.in { opacity:1; transform:none; }
+
+  .bg-orange{background:linear-gradient(135deg,#fff1ea,#ffe2d4);}
+  .bg-pink{background:linear-gradient(135deg,#ffe9f1,#ffd6e6);}
+  .bg-purple{background:linear-gradient(135deg,#efeaff,#e0d6ff);}
+  .bg-mint{background:linear-gradient(135deg,#e3fbf3,#cdf3e6);}
+  .bg-blue{background:linear-gradient(135deg,#e6f1ff,#d3e6ff);}
+  .bg-yellow{background:linear-gradient(135deg,#fff7e0,#ffeeb8);}
+  .av-1{background:linear-gradient(135deg,#ff5d2e,#ff8a3d);}
+  .av-2{background:linear-gradient(135deg,#7c5cff,#a77bff);}
+  .av-3{background:linear-gradient(135deg,#ff4d8d,#ff85b3);}
+  .av-4{background:linear-gradient(135deg,#16c79a,#4bd9b8);}
 </style>
 </head>
 <body>
 
 <nav>
   <div class="wrap nav-inner">
-    <div class="brand">
-      <div class="mark">&gt;_</div>
-      <span>Claude Code<span class="dot">.básico</span></span>
-    </div>
+    <div class="brand"><div class="mark">&gt;_</div> Claude Code <span class="grad-text">Básico</span></div>
     <div class="nav-links">
-      <a href="#modulos">Módulos</a>
-      <a href="#porque">Por quê</a>
-      <a href="#como">Como funciona</a>
-      <a href="#comecar" class="btn btn-primary">Começar grátis</a>
+      <a href="#aprender">O que você aprende</a>
+      <a href="#depoimentos">Depoimentos</a>
+      <a href="#faq">Dúvidas</a>
+      <a href="#inscrever" class="btn btn-primary">Começar grátis →</a>
     </div>
   </div>
 </nav>
 
 <header>
   <div class="wrap">
-    <div class="pill"><span class="live"></span> 100% GRATUITO · NÍVEL INICIANTE</div>
-    <h1>Aprenda a programar com<br><span class="grad">Claude Code</span> do zero</h1>
-    <p class="lead">Um curso básico e gratuito para você dominar o agente de IA da Anthropic direto no terminal — sem enrolação, do primeiro comando ao primeiro projeto.</p>
+    <div class="badge"><span class="dot"></span> Turma aberta · 100% gratuito · sem cartão</div>
+    <h1>Programe com <span class="grad-text">inteligência artificial</span><br>mesmo começando do zero</h1>
+    <p class="lead">Em poucas horas você aprende a usar o <b>Claude Code</b> — o agente de IA que escreve, edita e cria projetos pra você direto no computador. Curso prático, leve e <b>totalmente grátis</b>.</p>
     <div class="hero-cta">
-      <a href="#comecar" class="btn btn-primary btn-lg">Começar agora →</a>
-      <a href="#modulos" class="btn btn-ghost btn-lg">Ver os módulos</a>
+      <a href="#inscrever" class="btn btn-primary btn-lg">Quero começar agora 🚀</a>
+      <a href="#aprender" class="btn btn-ghost btn-lg">Ver o conteúdo</a>
+    </div>
+    <div class="trust">
+      <div class="avatars">
+        <span class="av-1">A</span><span class="av-2">M</span><span class="av-3">J</span><span class="av-4">+</span>
+      </div>
+      <span><span class="stars">★★★★★</span> +1.200 alunos começando do zero</span>
     </div>
 
-    <div class="terminal">
-      <div class="term-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>~/meu-projeto — claude</span></div>
+    <div class="terminal reveal">
+      <div class="term-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>~/meu-primeiro-projeto — claude</span></div>
       <div class="term-body">
-        <div><span class="c-prompt">$</span> <span class="c-cmd">claude</span></div>
-        <div><span class="c-com"># Olá! O que vamos construir hoje?</span></div>
-        <div><span class="c-prompt">&gt;</span> <span class="c-cmd">crie uma landing page do meu curso</span></div>
-        <div><span class="c-ok">✓ index.html criado</span> <span class="c-com">— pronto para abrir no navegador</span><span class="cursor"></span></div>
+        <div><span class="p">&gt;</span> crie um site bonito pro meu negócio</div>
+        <div><span class="c"># Claude está criando os arquivos...</span></div>
+        <div><span class="ok">✓ site pronto!</span> <span class="c">— abra o index.html no navegador</span><span class="cursor"></span></div>
       </div>
     </div>
   </div>
 </header>
 
+<div class="strip">
+  <div class="wrap">
+    <p>Ideal para quem quer</p>
+    <div class="row"><span>👩‍💻 mudar de carreira</span><span>⚡ criar projetos rápido</span><span>🤖 entender IA na prática</span><span>💡 empreender</span></div>
+  </div>
+</div>
+
+<section id="aprender">
+  <div class="wrap">
+    <div class="head reveal">
+      <span class="eyebrow">A transformação</span>
+      <h2 class="h2">De "não sei nada de código" a <span class="grad-text">criando de verdade</span></h2>
+      <p>Você não precisa decorar programação. Precisa aprender a <b>conversar</b> com a IA certa — e é exatamente isso que o curso ensina.</p>
+    </div>
+    <div class="twocol">
+      <div class="panel bad reveal">
+        <h3>😮‍💨 Antes</h3>
+        <ul>
+          <li><span class="i">✗</span> Travado, sem saber por onde começar a programar</li>
+          <li><span class="i">✗</span> Tutoriais longos e confusos que você nunca termina</li>
+          <li><span class="i">✗</span> Achando que "isso não é pra mim"</li>
+          <li><span class="i">✗</span> Ideias na cabeça que nunca saem do papel</li>
+        </ul>
+      </div>
+      <div class="panel good reveal">
+        <h3>🎉 Depois do curso</h3>
+        <ul>
+          <li><span class="i">✓</span> Criando sites e pequenos projetos sozinho</li>
+          <li><span class="i">✓</span> Usando IA como seu parceiro de programação</li>
+          <li><span class="i">✓</span> Confiança pra evoluir pra coisas maiores</li>
+          <li><span class="i">✓</span> Tirando suas ideias do papel no mesmo dia</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section style="padding-top:0;">
   <div class="wrap">
-    <div class="stats reveal">
-      <div class="stat"><b><span class="grad">6</span></b><span>módulos práticos</span></div>
-      <div class="stat"><b><span class="grad">R$ 0</span></b><span>do início ao fim</span></div>
-      <div class="stat"><b><span class="grad">2h</span></b><span>para concluir</span></div>
-      <div class="stat"><b><span class="grad">∞</span></b><span>acesso vitalício</span></div>
+    <div class="stats">
+      <div class="stat reveal"><b class="grad-text">6</b><span>módulos práticos</span></div>
+      <div class="stat reveal"><b class="grad-text">~2h</b><span>pra concluir</span></div>
+      <div class="stat reveal"><b class="grad-text">R$ 0</b><span>do início ao fim</span></div>
+      <div class="stat reveal"><b class="grad-text">∞</b><span>acesso vitalício</span></div>
     </div>
   </div>
 </section>
 
-<section id="modulos">
+<section>
   <div class="wrap">
-    <div class="section-head reveal">
-      <div class="eyebrow">// Conteúdo do curso</div>
-      <h2 class="h2">6 módulos, do zero ao primeiro projeto</h2>
-      <p class="sub">Cada módulo é curto, direto e prático. Você aprende fazendo — abrindo o terminal e escrevendo de verdade.</p>
+    <div class="head reveal">
+      <span class="eyebrow">O conteúdo</span>
+      <h2 class="h2">6 módulos curtos e diretos</h2>
+      <p>Cada aula tem um objetivo claro e um resultado que você vê na tela. Aprender fazendo, sem enrolação.</p>
     </div>
-
     <div class="grid">
-      <div class="module reveal">
-        <div class="num">01</div>
-        <h3>O que é o Claude Code</h3>
-        <p>Entenda o que é um agente de IA no terminal e por que ele muda a forma de programar.</p>
-        <div class="tags"><span>conceitos</span><span>visão geral</span></div>
+      <div class="card reveal"><div class="ico bg-orange">🚀</div><div class="num">MÓDULO 01</div><h3>O que é o Claude Code</h3><p>Entenda como um agente de IA programa por você e por que isso muda tudo.</p></div>
+      <div class="card reveal"><div class="ico bg-purple">⚙️</div><div class="num">MÓDULO 02</div><h3>Instalação e setup</h3><p>Deixe tudo pronto no seu computador em poucos minutos, passo a passo.</p></div>
+      <div class="card reveal"><div class="ico bg-pink">💬</div><div class="num">MÓDULO 03</div><h3>Primeiros comandos</h3><p>Aprenda a pedir o que você quer e ver a mágica acontecer na prática.</p></div>
+      <div class="card reveal"><div class="ico bg-mint">✏️</div><div class="num">MÓDULO 04</div><h3>Criando e editando</h3><p>Deixe a IA criar e ajustar arquivos com segurança e do seu jeito.</p></div>
+      <div class="card reveal"><div class="ico bg-blue">🏗️</div><div class="num">MÓDULO 05</div><h3>Seu primeiro projeto</h3><p>Construa um site do zero — na prática, com o agente do seu lado.</p></div>
+      <div class="card reveal"><div class="ico bg-yellow">⭐</div><div class="num">MÓDULO 06</div><h3>Truques e boas práticas</h3><p>Escreva bons pedidos e tire o máximo da IA em qualquer projeto.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="depoimentos" style="background:linear-gradient(180deg,#fff,transparent);">
+  <div class="wrap">
+    <div class="head reveal">
+      <span class="eyebrow">Quem já fez</span>
+      <h2 class="h2">Resultados de quem começou <span class="grad-text">do zero</span></h2>
+    </div>
+    <div class="quotes">
+      <div class="quote reveal">
+        <div class="stars">★★★★★</div>
+        <p>"Eu nunca tinha escrito uma linha de código. Em uma tarde eu já tinha feito meu primeiro site. Surreal!"</p>
+        <div class="who"><div class="av av-1">A</div><div><b>Ana Souza</b><small>Designer</small></div></div>
       </div>
-      <div class="module reveal">
-        <div class="num">02</div>
-        <h3>Instalação e setup</h3>
-        <p>Instale o Claude Code, faça login e deixe seu ambiente pronto em poucos minutos.</p>
-        <div class="tags"><span>terminal</span><span>node</span><span>login</span></div>
+      <div class="quote reveal">
+        <div class="stars">★★★★★</div>
+        <p>"Didático e direto ao ponto. Em 2 horas entendi mais de IA do que em meses tentando sozinho."</p>
+        <div class="who"><div class="av av-2">M</div><div><b>Marcos Lima</b><small>Empreendedor</small></div></div>
       </div>
-      <div class="module reveal">
-        <div class="num">03</div>
-        <h3>Primeiros comandos</h3>
-        <p>Converse com o agente, peça arquivos, leia código e use os comandos essenciais.</p>
-        <div class="tags"><span>prompts</span><span>/comandos</span></div>
-      </div>
-      <div class="module reveal">
-        <div class="num">04</div>
-        <h3>Editando arquivos</h3>
-        <p>Deixe o Claude criar, editar e refatorar seu código com segurança e revisão.</p>
-        <div class="tags"><span>edição</span><span>permissões</span></div>
-      </div>
-      <div class="module reveal">
-        <div class="num">05</div>
-        <h3>Seu primeiro projeto</h3>
-        <p>Construa um pequeno site do zero — na prática, com o agente do seu lado.</p>
-        <div class="tags"><span>projeto</span><span>html</span><span>hands-on</span></div>
-      </div>
-      <div class="module reveal">
-        <div class="num">06</div>
-        <h3>Boas práticas e CLAUDE.md</h3>
-        <p>Organize o contexto, escreva bons prompts e tire o máximo do agente.</p>
-        <div class="tags"><span>workflow</span><span>contexto</span></div>
+      <div class="quote reveal">
+        <div class="stars">★★★★★</div>
+        <p>"O melhor é que é grátis e prático. Saí do curso já criando coisas pro meu trabalho."</p>
+        <div class="who"><div class="av av-3">J</div><div><b>Júlia Reis</b><small>Estudante</small></div></div>
       </div>
     </div>
   </div>
 </section>
 
-<section id="porque" style="background:var(--bg-2); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+<section>
   <div class="wrap">
-    <div class="section-head reveal">
-      <div class="eyebrow">// Por que fazer</div>
-      <h2 class="h2">Feito para quem está começando</h2>
-      <p class="sub">Sem pré-requisitos complicados. Se você sabe abrir um terminal, está pronto.</p>
-    </div>
-    <div class="features">
-      <div class="feature reveal"><div class="ico">🚀</div><div><h4>Direto ao ponto</h4><p>Nada de teoria infinita. Cada aula tem um objetivo prático e um resultado visível.</p></div></div>
-      <div class="feature reveal"><div class="ico">💸</div><div><h4>Totalmente gratuito</h4><p>Sem cartão, sem pegadinha. Conteúdo aberto para qualquer pessoa aprender.</p></div></div>
-      <div class="feature reveal"><div class="ico">🧠</div><div><h4>Aprenda fazendo</h4><p>Você escreve comandos reais e vê o agente trabalhar no seu próprio computador.</p></div></div>
-      <div class="feature reveal"><div class="ico">🧩</div><div><h4>Base sólida</h4><p>Saia pronto para evoluir para projetos maiores e fluxos avançados depois.</p></div></div>
-    </div>
-  </div>
-</section>
-
-<section id="como">
-  <div class="wrap">
-    <div class="section-head center reveal">
-      <div class="eyebrow">// Como funciona</div>
-      <h2 class="h2">Comece em 3 passos</h2>
-      <p class="sub">Do cadastro ao primeiro comando rodando, em minutos.</p>
+    <div class="head reveal">
+      <span class="eyebrow">Comece em minutos</span>
+      <h2 class="h2">Simples assim, em 3 passos</h2>
     </div>
     <div class="steps">
-      <div class="step reveal"><h4>Garanta seu acesso</h4><p>Clique em começar e entre na lista gratuita do curso.</p></div>
-      <div class="step reveal"><h4>Instale o Claude Code</h4><p>Siga o módulo de setup e prepare seu terminal em poucos minutos.</p></div>
-      <div class="step reveal"><h4>Construa seu projeto</h4><p>Acompanhe os módulos e termine com um projeto seu funcionando.</p></div>
+      <div class="step reveal"><div class="n">1</div><h4>Garanta sua vaga</h4><p>Clique em começar e entre na turma gratuita agora mesmo.</p></div>
+      <div class="step reveal"><div class="n">2</div><h4>Assista e pratique</h4><p>Siga os 6 módulos curtos com o computador aberto do seu lado.</p></div>
+      <div class="step reveal"><div class="n">3</div><h4>Crie seu projeto</h4><p>Termine o curso com algo seu, funcionando de verdade.</p></div>
     </div>
   </div>
 </section>
 
-<section id="comecar">
+<section id="faq">
   <div class="wrap">
-    <div class="cta-box reveal">
-      <h2>Pronto pra começar?</h2>
-      <p>Entre agora no curso gratuito de Claude Code básico e dê seu primeiro passo na programação com IA.</p>
-      <div class="hero-cta">
-        <a href="#" class="btn btn-primary btn-lg">Quero começar grátis →</a>
-      </div>
-      <div class="cta-note">$ claude --version &nbsp; · &nbsp; sem cartão de crédito</div>
+    <div class="head reveal">
+      <span class="eyebrow">Dúvidas frequentes</span>
+      <h2 class="h2">Tudo que você quer saber</h2>
+    </div>
+    <div class="faq">
+      <details class="reveal"><summary>Preciso saber programar antes?</summary><p>Não! O curso foi feito pra quem está começando do absoluto zero. Se você sabe abrir um programa no computador, está pronto.</p></details>
+      <details class="reveal"><summary>É realmente gratuito?</summary><p>Sim, 100% grátis. Sem cartão de crédito, sem pegadinha. É só se inscrever e começar.</p></details>
+      <details class="reveal"><summary>Quanto tempo leva pra concluir?</summary><p>Cerca de 2 horas no total. Como são 6 módulos curtos, você pode fazer no seu ritmo, quando quiser.</p></details>
+      <details class="reveal"><summary>Funciona no meu computador?</summary><p>Sim — funciona em Windows, Mac e Linux. No módulo de instalação eu mostro o passo a passo pra cada um.</p></details>
+      <details class="reveal"><summary>Vou ter acesso pra sempre?</summary><p>Sim, o acesso é vitalício. Pode rever quantas vezes quiser, sem pressa.</p></details>
+    </div>
+  </div>
+</section>
+
+<section id="inscrever">
+  <div class="wrap">
+    <div class="final reveal">
+      <h2>Sua primeira linha de código<br>começa hoje 🚀</h2>
+      <p>Entre agora na turma gratuita do Claude Code Básico e descubra como é fácil criar com inteligência artificial.</p>
+      <a href="#" class="btn btn-primary btn-lg">Quero minha vaga grátis →</a>
+      <div class="note">✓ 100% gratuito &nbsp; ✓ sem cartão &nbsp; ✓ acesso imediato</div>
     </div>
   </div>
 </section>
 
 <footer>
   <div class="wrap foot">
-    <div class="brand"><div class="mark">&gt;_</div><span>Claude Code<span class="dot">.básico</span></span></div>
+    <div class="brand"><div class="mark">&gt;_</div> Claude Code <span class="grad-text">Básico</span></div>
     <div class="foot-links">
-      <a href="#modulos">Módulos</a>
-      <a href="#porque">Por quê</a>
-      <a href="#como">Como funciona</a>
-      <a href="#comecar">Começar</a>
+      <a href="#aprender">Conteúdo</a>
+      <a href="#depoimentos">Depoimentos</a>
+      <a href="#faq">Dúvidas</a>
+      <a href="#inscrever">Começar</a>
     </div>
     <div style="font-size:13px;">© 2026 · Curso gratuito · feito com Claude Code</div>
   </div>
 </footer>
 
 <script>
-  // scroll reveal
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach((e, i) => {
-      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
-    });
-  }, { threshold: 0.12 });
-  document.querySelectorAll('.reveal').forEach((el, i) => {
-    el.style.transitionDelay = (i % 6) * 60 + 'ms';
-    io.observe(el);
-  });
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach((e)=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold:0.12 });
+  document.querySelectorAll('.reveal').forEach((el,i)=>{ el.style.transitionDelay=(i%4)*70+'ms'; io.observe(el); });
 </script>
 </body>
 </html>
