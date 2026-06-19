@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Painel Financeiro — Visão do Gestor</title>
+<meta name="description" content="Dashboard financeiro com indicadores e gráficos por ano e por dia." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#0c1020; --panel:#151a30; --panel-2:#1b2240; --line:#262d4f;
+    --ink:#eef1fb; --muted:#8e97bd;
+    --green:#22c55e; --red:#f43f5e; --blue:#3b82f6; --amber:#f59e0b; --purple:#8b5cf6; --cyan:#22d3ee;
+    --mono:'JetBrains Mono',monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);
+    background-image:radial-gradient(800px 400px at 100% -10%,rgba(59,130,246,0.08),transparent 60%),radial-gradient(700px 400px at -5% 0%,rgba(139,92,246,0.08),transparent 60%);
+    min-height:100vh;}
+  .app{display:grid;grid-template-columns:240px 1fr;min-height:100vh;}
+  @media (max-width:900px){ .app{grid-template-columns:1fr;} .side{display:none;} }
+
+  /* sidebar */
+  .side{border-right:1px solid var(--line);padding:24px 18px;position:sticky;top:0;height:100vh;}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:16px;margin-bottom:34px;}
+  .brand .m{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,var(--blue),var(--purple));font-weight:800;}
+  .nav{display:flex;flex-direction:column;gap:4px;}
+  .nav a{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;color:var(--muted);text-decoration:none;font-size:14.5px;font-weight:600;transition:.2s;}
+  .nav a:hover{background:var(--panel);color:var(--ink);}
+  .nav a.active{background:var(--panel-2);color:var(--ink);}
+  .side .foot{position:absolute;bottom:24px;left:18px;right:18px;font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px;}
+
+  /* main */
+  main{padding:28px 32px 60px;}
+  @media (max-width:640px){ main{padding:20px;} }
+  .top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:26px;}
+  .top h1{font-size:24px;font-weight:800;letter-spacing:-0.02em;}
+  .top .sub{color:var(--muted);font-size:13.5px;margin-top:2px;}
+  .toggle{display:inline-flex;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:4px;}
+  .toggle button{border:none;background:transparent;color:var(--muted);font-weight:700;font-size:14px;padding:9px 20px;border-radius:9px;cursor:pointer;transition:.2s;font-family:inherit;}
+  .toggle button.on{background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;box-shadow:0 6px 16px rgba(59,130,246,0.35);}
+
+  /* kpi cards */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px;}
+  @media (max-width:1100px){ .kpis{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:520px){ .kpis{grid-template-columns:1fr;} }
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;}
+  .kpi .lbl{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px;font-weight:600;margin-bottom:12px;}
+  .kpi .ic{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:15px;}
+  .kpi .val{font-size:27px;font-weight:800;letter-spacing:-0.02em;font-variant-numeric:tabular-nums;}
+  .kpi .delta{margin-top:8px;font-size:12.5px;font-weight:700;display:inline-flex;align-items:center;gap:5px;}
+  .up{color:var(--green);} .down{color:var(--red);}
+  .kpi .delta .vs{color:var(--muted);font-weight:500;}
+
+  /* grid panels */
+  .grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px;}
+  @media (max-width:1000px){ .grid{grid-template-columns:1fr;} }
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;}
+  .card h3{font-size:15px;font-weight:700;margin-bottom:2px;}
+  .card .hint{color:var(--muted);font-size:12.5px;margin-bottom:16px;}
+  .chart-box{position:relative;height:300px;}
+  .chart-sm{position:relative;height:240px;}
+
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px;}
+  @media (max-width:1000px){ .grid3{grid-template-columns:1fr;} }
+
+  /* indicators list */
+  .ind{display:flex;flex-direction:column;gap:14px;}
+  .ind .row{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+  .ind .row .name{color:var(--muted);font-size:13.5px;font-weight:600;}
+  .ind .row .num{font-weight:800;font-size:15px;font-variant-numeric:tabular-nums;}
+  .bar{height:7px;border-radius:99px;background:var(--panel-2);overflow:hidden;margin-top:7px;}
+  .bar i{display:block;height:100%;border-radius:99px;}
+
+  /* table */
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th{text-align:left;color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em;padding:10px 12px;border-bottom:1px solid var(--line);}
+  td{padding:13px 12px;border-bottom:1px solid var(--line);font-weight:500;}
+  tr:last-child td{border-bottom:none;}
+  .tag{font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:99px;}
+  .tag.in{background:rgba(34,197,94,0.15);color:var(--green);}
+  .tag.out{background:rgba(244,63,94,0.15);color:var(--red);}
+  .money{font-variant-numeric:tabular-nums;font-weight:700;}
+  .note{margin-top:22px;color:var(--muted);font-size:12px;border:1px dashed var(--line);border-radius:10px;padding:12px 14px;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="side">
+    <div class="brand"><div class="m">₿</div> FinPainel</div>
+    <nav class="nav">
+      <a href="#" class="active">📊 Visão geral</a>
+      <a href="#">💰 Receitas</a>
+      <a href="#">💸 Despesas</a>
+      <a href="#">🏦 Fluxo de caixa</a>
+      <a href="#">📈 Indicadores</a>
+      <a href="#">🧾 Transações</a>
+      <a href="#">⚙️ Configurações</a>
+    </nav>
+    <div class="foot">Logado como<br><b style="color:var(--ink)">Gestor</b><br>Atualizado agora</div>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+    <div class="top">
+      <div>
+        <h1>Visão geral financeira</h1>
+        <div class="sub" id="period-sub">Acompanhamento anual · 2026</div>
+      </div>
+      <div class="toggle">
+        <button id="btn-year" class="on" onclick="setPeriod('year')">Ano</button>
+        <button id="btn-day" onclick="setPeriod('day')">Dia</button>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpis">
+      <div class="kpi">
+        <div class="lbl"><span class="ic" style="background:rgba(34,197,94,.15);color:var(--green)">↑</span> Receita</div>
+        <div class="val" id="kpi-receita">—</div>
+        <div class="delta up" id="kpi-receita-d">▲ 0% <span class="vs">vs anterior</span></div>
+      </div>
+      <div class="kpi">
+        <div class="lbl"><span class="ic" style="background:rgba(244,63,94,.15);color:var(--red)">↓</span> Despesas</div>
+        <div class="val" id="kpi-despesa">—</div>
+        <div class="delta down" id="kpi-despesa-d">▲ 0% <span class="vs">vs anterior</span></div>
+      </div>
+      <div class="kpi">
+        <div class="lbl"><span class="ic" style="background:rgba(59,130,246,.15);color:var(--blue)">＝</span> Lucro líquido</div>
+        <div class="val" id="kpi-lucro">—</div>
+        <div class="delta up" id="kpi-lucro-d">▲ 0% <span class="vs">vs anterior</span></div>
+      </div>
+      <div class="kpi">
+        <div class="lbl"><span class="ic" style="background:rgba(139,92,246,.15);color:var(--purple)">%</span> Margem líquida</div>
+        <div class="val" id="kpi-margem">—</div>
+        <div class="delta up" id="kpi-margem-d">▲ 0 p.p. <span class="vs">vs anterior</span></div>
+      </div>
+    </div>
+
+    <!-- main chart + doughnut -->
+    <div class="grid">
+      <div class="card">
+        <h3>Receita × Despesa × Lucro</h3>
+        <div class="hint" id="chart1-hint">Por mês — ano de 2026 (R$)</div>
+        <div class="chart-box"><canvas id="chartMain"></canvas></div>
+      </div>
+      <div class="card">
+        <h3>Despesas por categoria</h3>
+        <div class="hint">Composição do período</div>
+        <div class="chart-sm"><canvas id="chartDoughnut"></canvas></div>
+      </div>
+    </div>
+
+    <!-- cashflow + indicators + balance -->
+    <div class="grid3">
+      <div class="card">
+        <h3>Fluxo de caixa</h3>
+        <div class="hint" id="chart2-hint">Saldo acumulado (R$)</div>
+        <div class="chart-sm"><canvas id="chartFlow"></canvas></div>
+      </div>
+      <div class="card">
+        <h3>Indicadores</h3>
+        <div class="hint">Saúde financeira</div>
+        <div class="ind" id="indicators"></div>
+      </div>
+      <div class="card">
+        <h3>Saldo & metas</h3>
+        <div class="hint">Posição atual</div>
+        <div class="ind">
+          <div>
+            <div class="row"><span class="name">Saldo em caixa</span><span class="num" id="saldo">—</span></div>
+          </div>
+          <div>
+            <div class="row"><span class="name">Meta de receita</span><span class="num"><span id="meta-pct">0</span>%</span></div>
+            <div class="bar"><i id="meta-bar" style="width:0%;background:linear-gradient(90deg,var(--blue),var(--purple))"></i></div>
+          </div>
+          <div>
+            <div class="row"><span class="name">Contas a receber</span><span class="num money" id="receber">—</span></div>
+          </div>
+          <div>
+            <div class="row"><span class="name">Contas a pagar</span><span class="num money" id="pagar">—</span></div>
+          </div>
+          <div>
+            <div class="row"><span class="name">Inadimplência</span><span class="num" id="inad">—</span></div>
+            <div class="bar"><i id="inad-bar" style="width:0%;background:linear-gradient(90deg,var(--amber),var(--red))"></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- transactions -->
+    <div class="card">
+      <h3>Transações recentes</h3>
+      <div class="hint">Últimos lançamentos</div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead><tr><th>Data</th><th>Descrição</th><th>Categoria</th><th>Tipo</th><th style="text-align:right">Valor</th></tr></thead>
+          <tbody id="tx-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="note">⚠️ Os números acima são <b>dados de exemplo</b> para demonstração do layout. Substitua pelos seus dados reais nos arrays <code>DATA.year</code> e <code>DATA.day</code> no final do arquivo (ou conecte a uma API/planilha).</div>
+  </main>
+</div>
+
+<script>
+/* ============== DADOS DE EXEMPLO (troque pelos reais) ============== */
+const BRL = v => 'R$ ' + v.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0});
+const BRLc = v => 'R$ ' + v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+const DATA = {
+  year: {
+    labels:['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+    receita:[185,198,210,205,232,248,255,268,279,290,305,330].map(v=>v*1000),
+    despesa:[120,128,131,140,145,150,152,160,158,165,170,178].map(v=>v*1000),
+    chartHint:'Por mês — ano de 2026 (R$)',
+    flowHint:'Saldo acumulado no ano (R$)',
+    sub:'Acompanhamento anual · 2026',
+    deltas:{receita:'+18,4%',despesa:'+12,1%',lucro:'+24,7%',margem:'+2,8 p.p.'},
+    cat:{labels:['Pessoal','Fornecedores','Marketing','Operação','Impostos','Outros'],values:[680,420,210,180,260,90].map(v=>v*1000)},
+    saldo:842000, metaPct:84, receber:312000, pagar:198000, inadPct:3.2,
+    indicators:[
+      {n:'Margem bruta',v:'58%',p:58,c:'var(--green)'},
+      {n:'Margem líquida',v:'36%',p:36,c:'var(--blue)'},
+      {n:'EBITDA',v:'42%',p:42,c:'var(--purple)'},
+      {n:'Liquidez corrente',v:'1,8',p:72,c:'var(--cyan)'},
+      {n:'ROI',v:'27%',p:27,c:'var(--amber)'},
+    ],
+    tx:[
+      ['12/06','Venda — Cliente Alfa','Receita','in',48200],
+      ['11/06','Folha de pagamento','Pessoal','out',62000],
+      ['10/06','Venda — Cliente Beta','Receita','in',31500],
+      ['09/06','Fornecedor XYZ','Fornecedores','out',18700],
+      ['08/06','Campanha de anúncios','Marketing','out',9400],
+      ['07/06','Venda — Cliente Gama','Receita','in',27800],
+    ],
+  },
+  day: {
+    labels:['00h','03h','06h','09h','12h','15h','18h','21h','24h'],
+    receita:[2,1,3,9,14,18,21,12,6].map(v=>v*1000),
+    despesa:[1,1,2,5,6,7,8,5,3].map(v=>v*1000),
+    chartHint:'Por faixa de horário — hoje (R$)',
+    flowHint:'Saldo acumulado no dia (R$)',
+    sub:'Acompanhamento do dia · hoje',
+    deltas:{receita:'+6,2%',despesa:'+1,4%',lucro:'+9,8%',margem:'+1,1 p.p.'},
+    cat:{labels:['Pessoal','Fornecedores','Marketing','Operação','Impostos','Outros'],values:[14,9,5,4,6,2].map(v=>v*1000)},
+    saldo:842000, metaPct:71, receber:24000, pagar:15000, inadPct:1.1,
+    indicators:[
+      {n:'Margem bruta',v:'61%',p:61,c:'var(--green)'},
+      {n:'Margem líquida',v:'39%',p:39,c:'var(--blue)'},
+      {n:'EBITDA',v:'45%',p:45,c:'var(--purple)'},
+      {n:'Conversão',v:'4,2%',p:42,c:'var(--cyan)'},
+      {n:'Ticket médio',v:'R$ 318',p:55,c:'var(--amber)'},
+    ],
+    tx:[
+      ['18:42','Venda — PDV loja 1','Receita','in',1280],
+      ['17:10','Venda — site','Receita','in',890],
+      ['15:55','Frete fornecedor','Operação','out',340],
+      ['14:02','Venda — PDV loja 2','Receita','in',2150],
+      ['11:30','Insumos','Fornecedores','out',760],
+      ['09:18','Venda — site','Receita','in',430],
+    ],
+  }
+};
+
+/* ============== ESTADO + CHARTS ============== */
+let current='year', chartMain, chartDoughnut, chartFlow;
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+Chart.defaults.color = '#8e97bd';
+Chart.defaults.font.family = "Inter, sans-serif";
+Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+
+function sum(a){return a.reduce((x,y)=>x+y,0);}
+
+function render(){
+  const d = DATA[current];
+  const lucro = d.receita.map((r,i)=>r-d.despesa[i]);
+  const totR = sum(d.receita), totD = sum(d.despesa), totL = totR-totD;
+  const margem = totR? (totL/totR*100):0;
+
+  // KPIs
+  document.getElementById('kpi-receita').textContent = BRL(totR);
+  document.getElementById('kpi-despesa').textContent = BRL(totD);
+  document.getElementById('kpi-lucro').textContent = BRL(totL);
+  document.getElementById('kpi-margem').textContent = margem.toFixed(1).replace('.',',')+'%';
+  document.getElementById('kpi-receita-d').innerHTML = '▲ '+d.deltas.receita+' <span class="vs">vs anterior</span>';
+  document.getElementById('kpi-despesa-d').innerHTML = '▲ '+d.deltas.despesa+' <span class="vs">vs anterior</span>';
+  document.getElementById('kpi-lucro-d').innerHTML = '▲ '+d.deltas.lucro+' <span class="vs">vs anterior</span>';
+  document.getElementById('kpi-margem-d').innerHTML = '▲ '+d.deltas.margem+' <span class="vs">vs anterior</span>';
+
+  document.getElementById('period-sub').textContent = d.sub;
+  document.getElementById('chart1-hint').textContent = d.chartHint;
+  document.getElementById('chart2-hint').textContent = d.flowHint;
+
+  // balance panel
+  document.getElementById('saldo').textContent = BRL(d.saldo);
+  document.getElementById('meta-pct').textContent = d.metaPct;
+  document.getElementById('meta-bar').style.width = d.metaPct+'%';
+  document.getElementById('receber').textContent = BRL(d.receber);
+  document.getElementById('pagar').textContent = BRL(d.pagar);
+  document.getElementById('inad').textContent = d.inadPct.toLocaleString('pt-BR')+'%';
+  document.getElementById('inad-bar').style.width = Math.min(d.inadPct*10,100)+'%';
+
+  // indicators
+  document.getElementById('indicators').innerHTML = d.indicators.map(x=>`
+    <div><div class="row"><span class="name">${x.n}</span><span class="num">${x.v}</span></div>
+    <div class="bar"><i style="width:${x.p}%;background:${x.c}"></i></div></div>`).join('');
+
+  // transactions
+  document.getElementById('tx-body').innerHTML = d.tx.map(t=>`
+    <tr><td>${t[0]}</td><td>${t[1]}</td><td style="color:var(--muted)">${t[2]}</td>
+    <td><span class="tag ${t[3]}">${t[3]==='in'?'Entrada':'Saída'}</span></td>
+    <td style="text-align:right" class="money" >${t[3]==='in'?'+':'−'}${BRLc(t[4])}</td></tr>`).join('');
+
+  // charts
+  const grad = (ctx,c1,c2)=>{const g=ctx.createLinearGradient(0,0,0,300);g.addColorStop(0,c1);g.addColorStop(1,c2);return g;};
+
+  if(chartMain) chartMain.destroy();
+  chartMain = new Chart(document.getElementById('chartMain'),{
+    type:'bar',
+    data:{labels:d.labels,datasets:[
+      {label:'Receita',data:d.receita,backgroundColor:'rgba(34,197,94,.75)',borderRadius:6,categoryPercentage:.6,barPercentage:.8},
+      {label:'Despesa',data:d.despesa,backgroundColor:'rgba(244,63,94,.7)',borderRadius:6,categoryPercentage:.6,barPercentage:.8},
+      {label:'Lucro',data:lucro,type:'line',borderColor:'#3b82f6',backgroundColor:'#3b82f6',tension:.35,borderWidth:3,pointRadius:3,fill:false},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top',labels:{usePointStyle:true,boxWidth:8,padding:16}},
+        tooltip:{callbacks:{label:c=>c.dataset.label+': '+BRL(c.raw)}}},
+      scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>'R$ '+(v/1000)+'k'},grid:{color:'rgba(255,255,255,.05)'}}}}
+  });
+
+  if(chartDoughnut) chartDoughnut.destroy();
+  chartDoughnut = new Chart(document.getElementById('chartDoughnut'),{
+    type:'doughnut',
+    data:{labels:d.cat.labels,datasets:[{data:d.cat.values,
+      backgroundColor:['#3b82f6','#8b5cf6','#22d3ee','#f59e0b','#f43f5e','#64748b'],borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'62%',
+      plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:8,padding:12,font:{size:11}}},
+        tooltip:{callbacks:{label:c=>c.label+': '+BRL(c.raw)}}}}
+  });
+
+  // cashflow = saldo acumulado
+  let acc=0; const flow=d.receita.map((r,i)=>{acc+=r-d.despesa[i];return acc;});
+  if(chartFlow) chartFlow.destroy();
+  const fctx = document.getElementById('chartFlow').getContext('2d');
+  chartFlow = new Chart(fctx,{
+    type:'line',
+    data:{labels:d.labels,datasets:[{label:'Saldo',data:flow,borderColor:'#22d3ee',
+      backgroundColor:grad(fctx,'rgba(34,211,238,.35)','rgba(34,211,238,0)'),fill:true,tension:.35,borderWidth:3,pointRadius:0}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'Saldo: '+BRL(c.raw)}}},
+      scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>'R$ '+(v/1000)+'k'},grid:{color:'rgba(255,255,255,.05)'}}}}
+  });
+}
+
+function setPeriod(p){
+  current=p;
+  document.getElementById('btn-year').classList.toggle('on',p==='year');
+  document.getElementById('btn-day').classList.toggle('on',p==='day');
+  render();
+}
+render();
+</script>
+</body>
+</html>
