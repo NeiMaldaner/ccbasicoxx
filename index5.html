@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Meus Exercícios do Dia — Fisioterapia</title>
+<meta name="description" content="Receba seu programa de exercícios personalizado: escolha sexo, faixa de idade e objetivo." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#f3f8f7; --surface:#fff; --ink:#10302b; --muted:#5d7873; --line:#e1ece9;
+    --teal:#0fa896; --teal-d:#0c8576; --teal-soft:#e3f6f2; --amber:#f59e0b; --rose:#f43f5e;
+    --shadow:0 10px 34px rgba(15,168,150,0.12); --shadow-sm:0 4px 16px rgba(16,48,43,0.06);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;
+    background-image:radial-gradient(700px 380px at 100% -5%,rgba(15,168,150,0.10),transparent 60%);}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px;}
+  a{color:inherit;}
+
+  /* header */
+  header{padding:30px 0 8px;}
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand .m{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--teal),var(--teal-d));display:grid;place-items:center;font-size:22px;box-shadow:var(--shadow);}
+  .brand b{font-size:18px;font-weight:800;letter-spacing:-0.01em;}
+  .brand small{display:block;color:var(--muted);font-size:13px;font-weight:500;}
+
+  /* hero copy */
+  .intro{text-align:center;padding:34px 0 26px;}
+  .intro h1{font-size:clamp(28px,5vw,46px);font-weight:800;letter-spacing:-0.03em;margin-bottom:12px;}
+  .intro h1 span{color:var(--teal-d);}
+  .intro p{color:var(--muted);font-size:17px;max-width:540px;margin:0 auto;}
+
+  /* form card */
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:30px;box-shadow:var(--shadow-sm);margin-bottom:24px;}
+  .step{margin-bottom:28px;}
+  .step:last-of-type{margin-bottom:8px;}
+  .step .q{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;margin-bottom:14px;}
+  .step .q .n{width:26px;height:26px;border-radius:50%;background:var(--teal-soft);color:var(--teal-d);display:grid;place-items:center;font-size:13px;font-weight:800;}
+
+  .opts{display:flex;gap:12px;flex-wrap:wrap;}
+  .opt{flex:1;min-width:130px;border:1.5px solid var(--line);background:var(--surface);border-radius:16px;padding:16px;cursor:pointer;text-align:center;transition:.18s;font-weight:600;font-size:15px;user-select:none;}
+  .opt .ic{font-size:24px;display:block;margin-bottom:6px;}
+  .opt small{display:block;color:var(--muted);font-weight:500;font-size:12.5px;margin-top:3px;}
+  .opt:hover{border-color:var(--teal);transform:translateY(-2px);}
+  .opt.sel{border-color:var(--teal);background:var(--teal-soft);box-shadow:0 0 0 3px rgba(15,168,150,0.12);}
+
+  .opts.grid5{display:grid;grid-template-columns:repeat(5,1fr);}
+  @media (max-width:760px){ .opts.grid5{grid-template-columns:1fr 1fr;} }
+  .opts.ages{display:grid;grid-template-columns:repeat(4,1fr);}
+  @media (max-width:620px){ .opts.ages{grid-template-columns:repeat(2,1fr);} }
+
+  .cta-row{display:flex;justify-content:center;margin-top:6px;}
+  .btn{border:none;cursor:pointer;font-family:inherit;font-weight:800;font-size:16.5px;padding:16px 34px;border-radius:16px;
+    background:linear-gradient(135deg,var(--teal),var(--teal-d));color:#fff;box-shadow:var(--shadow);transition:.18s;display:inline-flex;align-items:center;gap:10px;}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 14px 36px rgba(15,168,150,0.3);}
+  .btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none;}
+  .btn.ghost{background:var(--surface);color:var(--ink);border:1.5px solid var(--line);box-shadow:none;font-size:15px;padding:13px 22px;}
+  .btn.ghost:hover{border-color:var(--teal);color:var(--teal-d);}
+
+  /* results */
+  #results{display:none;}
+  .summary{background:linear-gradient(135deg,var(--teal),var(--teal-d));color:#fff;border-radius:24px;padding:30px;margin-bottom:22px;box-shadow:var(--shadow);}
+  .summary h2{font-size:clamp(22px,4vw,30px);font-weight:800;letter-spacing:-0.02em;margin-bottom:8px;}
+  .summary p{opacity:.95;font-size:15.5px;}
+  .summary .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;}
+  .summary .chips span{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.25);border-radius:99px;padding:6px 14px;font-size:13px;font-weight:600;}
+  .res-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:22px;}
+
+  .ex-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  @media (max-width:760px){ .ex-grid{grid-template-columns:1fr;} }
+  .ex{background:var(--surface);border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;}
+  .ex .photo{height:200px;background:var(--teal-soft) center/cover no-repeat;position:relative;}
+  .ex .photo .num{position:absolute;top:12px;left:12px;background:rgba(16,48,43,.78);color:#fff;font-weight:800;font-size:13px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;}
+  .ex .photo .dose{position:absolute;bottom:12px;right:12px;background:var(--teal-d);color:#fff;font-weight:700;font-size:12.5px;padding:6px 12px;border-radius:99px;}
+  .ex .body{padding:20px;display:flex;flex-direction:column;gap:10px;flex:1;}
+  .ex h3{font-size:18px;font-weight:800;letter-spacing:-0.01em;}
+  .ex .target{font-size:12.5px;font-weight:700;color:var(--teal-d);text-transform:uppercase;letter-spacing:.03em;}
+  .ex ol{margin:2px 0 0 18px;display:flex;flex-direction:column;gap:5px;}
+  .ex ol li{font-size:14px;color:var(--ink);}
+  .ex .warn{margin-top:auto;display:flex;gap:8px;background:#fff7ed;border:1px solid #fde9cf;color:#9a5b00;border-radius:12px;padding:10px 12px;font-size:12.5px;font-weight:600;}
+
+  .disclaimer{margin:30px 0 50px;color:var(--muted);font-size:12.5px;text-align:center;border:1px dashed var(--line);border-radius:14px;padding:14px 18px;}
+  footer{padding:24px 0 40px;text-align:center;color:var(--muted);font-size:13px;}
+
+  @media print{
+    body{background:#fff;} .panel,.intro,header .brand small,.res-actions,footer{display:none!important;}
+    .summary{box-shadow:none;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .ex{break-inside:avoid;box-shadow:none;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <div class="m">🧑‍⚕️</div>
+      <div><b>FisioDia</b><small>Programa de exercícios personalizado</small></div>
+    </div>
+  </header>
+
+  <div class="intro">
+    <h1>Seus exercícios <span>do dia</span> 🤸</h1>
+    <p>Responda 3 perguntas rápidas e receba um programa de exercícios feito para o seu perfil, com fotos e instruções passo a passo.</p>
+  </div>
+
+  <!-- FORM -->
+  <div class="panel" id="form">
+
+    <div class="step">
+      <div class="q"><span class="n">1</span> Você é…</div>
+      <div class="opts" id="sexo">
+        <div class="opt" data-v="Mulher"><span class="ic">👩</span> Mulher</div>
+        <div class="opt" data-v="Homem"><span class="ic">👨</span> Homem</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="q"><span class="n">2</span> Sua faixa de idade</div>
+      <div class="opts ages" id="idade">
+        <div class="opt" data-v="10–19 anos">10–19<small>anos</small></div>
+        <div class="opt" data-v="20–29 anos">20–29<small>anos</small></div>
+        <div class="opt" data-v="30–39 anos">30–39<small>anos</small></div>
+        <div class="opt" data-v="40–49 anos">40–49<small>anos</small></div>
+        <div class="opt" data-v="50–59 anos">50–59<small>anos</small></div>
+        <div class="opt" data-v="60–69 anos">60–69<small>anos</small></div>
+        <div class="opt" data-v="70–79 anos">70–79<small>anos</small></div>
+        <div class="opt" data-v="80+ anos">80+<small>anos</small></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="q"><span class="n">3</span> Qual o seu objetivo?</div>
+      <div class="opts grid5" id="objetivo">
+        <div class="opt" data-v="dor"><span class="ic">🩹</span> Alívio de dor<small>coluna / lombar</small></div>
+        <div class="opt" data-v="forca"><span class="ic">💪</span> Fortalecimento<small>ganho de força</small></div>
+        <div class="opt" data-v="mobilidade"><span class="ic">🤸</span> Mobilidade<small>alongamento</small></div>
+        <div class="opt" data-v="reab"><span class="ic">🦵</span> Reabilitação<small>pós-lesão</small></div>
+        <div class="opt" data-v="postura"><span class="ic">🧍</span> Postura<small>ergonomia</small></div>
+      </div>
+    </div>
+
+    <div class="cta-row">
+      <button class="btn" id="gerar" disabled onclick="gerar()">Gerar meus exercícios →</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results">
+    <div class="summary">
+      <h2 id="sum-title">Seu programa de hoje</h2>
+      <p id="sum-text"></p>
+      <div class="chips" id="sum-chips"></div>
+    </div>
+    <div class="res-actions">
+      <button class="btn ghost" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>
+      <button class="btn ghost" onclick="reset()">↺ Trocar escolhas</button>
+    </div>
+    <div class="ex-grid" id="ex-grid"></div>
+    <div class="disclaimer" id="disc"></div>
+  </div>
+
+  <footer>FisioDia · feito com Claude Code — material educativo, não substitui avaliação presencial.</footer>
+</div>
+
+<script>
+const IMG = id => `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=800`;
+
+/* ---- banco de exercícios (cada um marcado com os objetivos a que serve) ---- */
+const EXERCICIOS = [
+  { nome:'Alongamento de isquiotibiais', foto:IMG(4662345), alvo:'Posterior da coxa', obj:['mobilidade','dor'],
+    base:'2 séries · 30s cada perna',
+    passos:['Sente-se com uma perna estendida à frente.','Incline o tronco para frente mantendo a coluna reta.','Vá até sentir um alongamento confortável atrás da coxa.','Respire fundo e mantenha sem balançar.'],
+    cuidado:'Não force além de um leve desconforto. Sem dor aguda.' },
+
+  { nome:'Ponte de glúteos', foto:IMG(7746167), alvo:'Glúteos e lombar', obj:['forca','dor','reab'],
+    base:'3 séries · 12 repetições',
+    passos:['Deite de costas, joelhos dobrados, pés apoiados.','Contraia o abdômen e os glúteos.','Eleve o quadril até alinhar com o tronco.','Desça devagar, sem deixar a lombar arquear.'],
+    cuidado:'Movimento controlado. Pare se sentir dor na lombar.' },
+
+  { nome:'Mobilidade de coluna (gato-camelo)', foto:IMG(4852747), alvo:'Coluna', obj:['dor','mobilidade','postura'],
+    base:'2 séries · 10 ciclos',
+    passos:['Fique de quatro apoios, mãos sob os ombros.','Arredonde as costas para cima (gato).','Depois afunde suavemente (camelo).','Alterne devagar acompanhando a respiração.'],
+    cuidado:'Movimentos lentos, sem forçar os extremos.' },
+
+  { nome:'Prancha abdominal', foto:IMG(5037407), alvo:'Core / abdômen', obj:['forca','postura'],
+    base:'3 séries · 20–30s',
+    passos:['Apoie antebraços e pontas dos pés no chão.','Mantenha o corpo reto da cabeça aos calcanhares.','Contraia o abdômen, sem deixar o quadril cair.','Respire normalmente durante o tempo.'],
+    cuidado:'Não deixe a lombar afundar. Comece com menos tempo.' },
+
+  { nome:'Alongamento cervical', foto:IMG(6339353), alvo:'Pescoço / cervical', obj:['postura','dor'],
+    base:'2 séries · 20s cada lado',
+    passos:['Sentado, costas eretas.','Incline a cabeça levando a orelha ao ombro.','Use a mão para um leve apoio (sem puxar forte).','Sinta o alongamento lateral do pescoço.'],
+    cuidado:'Sem movimentos bruscos. Pare se houver tontura.' },
+
+  { nome:'Agachamento assistido', foto:IMG(7746267), alvo:'Pernas e quadril', obj:['forca','reab'],
+    base:'3 séries · 10 repetições',
+    passos:['Em pé, pés na largura dos ombros.','Se precisar, apoie-se numa cadeira à frente.','Desça como se fosse sentar, joelhos atrás dos pés.','Suba contraindo as pernas e glúteos.'],
+    cuidado:'Joelhos alinhados aos pés. Amplitude confortável.' },
+
+  { nome:'Alongamento de quadril', foto:IMG(6339448), alvo:'Flexores do quadril', obj:['mobilidade','dor'],
+    base:'2 séries · 30s cada lado',
+    passos:['Ajoelhe com um pé à frente (posição de avanço).','Empurre o quadril suavemente para frente.','Mantenha o tronco ereto.','Sinta o alongamento na frente do quadril de trás.'],
+    cuidado:'Use uma almofada sob o joelho se incomodar.' },
+
+  { nome:'Rotação de tronco sentado', foto:IMG(7746163), alvo:'Tronco / coluna', obj:['mobilidade','postura'],
+    base:'2 séries · 10 cada lado',
+    passos:['Sente-se ereto numa cadeira firme.','Gire o tronco para um lado, devagar.','Use o encosto como leve apoio.','Volte ao centro e repita para o outro lado.'],
+    cuidado:'Gire a partir do tronco, não force o pescoço.' },
+
+  { nome:'Elevação de panturrilha', foto:IMG(5149176), alvo:'Panturrilha / tornozelo', obj:['reab','forca'],
+    base:'3 séries · 15 repetições',
+    passos:['Em pé, apoie as mãos numa parede ou cadeira.','Eleve os calcanhares ficando na ponta dos pés.','Segure 1 segundo no topo.','Desça devagar até o chão.'],
+    cuidado:'Equilíbrio sempre apoiado. Movimento controlado.' },
+
+  { nome:'Respiração diafragmática', foto:IMG(7187838), alvo:'Relaxamento / core', obj:['dor','postura','reab'],
+    base:'5 minutos',
+    passos:['Deite-se confortável, uma mão no abdômen.','Inspire pelo nariz enchendo a barriga (não o peito).','Expire devagar pela boca esvaziando o abdômen.','Repita em ritmo calmo e constante.'],
+    cuidado:'Ótimo para encerrar a sessão e relaxar a musculatura.' },
+];
+
+const OBJ_LABEL = { dor:'Alívio de dor', forca:'Fortalecimento', mobilidade:'Mobilidade', reab:'Reabilitação', postura:'Postura' };
+const sel = { sexo:null, idade:null, objetivo:null };
+
+function bind(group){
+  document.querySelectorAll('#'+group+' .opt').forEach(o=>{
+    o.onclick = () => {
+      document.querySelectorAll('#'+group+' .opt').forEach(x=>x.classList.remove('sel'));
+      o.classList.add('sel');
+      sel[group] = o.dataset.v;
+      document.getElementById('gerar').disabled = !(sel.sexo && sel.idade && sel.objetivo);
+    };
+  });
+}
+bind('sexo'); bind('idade'); bind('objetivo');
+
+/* ajusta intensidade conforme a idade */
+function ajusteIdade(idade){
+  if(idade==='60–69 anos'||idade==='70–79 anos'||idade==='80+ anos')
+    return {nota:'Versão suave: menos repetições e amplitude confortável. Faça sempre com apoio e sem dor.', leve:true};
+  if(idade==='10–19 anos')
+    return {nota:'Foque na execução correta e na constância. Evite cargas pesadas em fase de crescimento.', leve:false};
+  return {nota:'Mantenha a constância: melhores resultados vêm da regularidade diária.', leve:false};
+}
+
+function gerar(){
+  const lista = EXERCICIOS.filter(e=>e.obj.includes(sel.objetivo));
+  const aj = ajusteIdade(sel.idade);
+
+  // saudação
+  const ladj = sel.sexo==='Mulher'?'preparada':'preparado';
+  document.getElementById('sum-title').textContent = `Programa de ${OBJ_LABEL[sel.objetivo]} 💚`;
+  document.getElementById('sum-text').textContent =
+    `Olá! Aqui está seu programa do dia, ${ladj} para o seu perfil. São ${lista.length} exercícios. ${aj.nota}`;
+  document.getElementById('sum-chips').innerHTML =
+    [sel.sexo, sel.idade, OBJ_LABEL[sel.objetivo]].map(c=>`<span>${c}</span>`).join('');
+
+  document.getElementById('ex-grid').innerHTML = lista.map((e,i)=>{
+    const dose = aj.leve ? e.base.replace(/(\d+)(\s*séries)/,(m,n,s)=>Math.max(1,n-1)+s) : e.base;
+    return `
+    <div class="ex">
+      <div class="photo" style="background-image:url('${e.foto}')">
+        <div class="num">${i+1}</div>
+        <div class="dose">${dose}</div>
+      </div>
+      <div class="body">
+        <div class="target">${e.alvo}</div>
+        <h3>${e.nome}</h3>
+        <ol>${e.passos.map(p=>`<li>${p}</li>`).join('')}</ol>
+        <div class="warn">⚠️ ${e.cuidado}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('disc').innerHTML =
+    'Programa educativo gerado automaticamente. <b>Interrompa qualquer exercício que cause dor</b> e procure sua fisioterapeuta em caso de dúvidas ou desconforto persistente.';
+
+  document.getElementById('form').style.display='none';
+  document.getElementById('results').style.display='block';
+  document.getElementById('results').scrollIntoView({behavior:'smooth'});
+}
+
+function reset(){
+  document.getElementById('results').style.display='none';
+  document.getElementById('form').style.display='block';
+  document.getElementById('form').scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>
